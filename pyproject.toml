@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "recombass"
+version = "0.1.0"
+description = "Detect recombination hot/cold spots from SNP matrices using wavelet denoising"
+readme = "README.md"
+authors = [{name = "Hao Huang", email = "huanghao@simm.ac.cn"}]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy",
+    "pandas",
+    "polars",
+    "pywt",
+    "matplotlib",
+    "seaborn",
+    "scikit-learn",
+    "numba",
+    "click"
+]
+
+[project.scripts]
+recombass = "recombass.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest", "black", "flake8"]
