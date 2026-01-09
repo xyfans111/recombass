@@ -86,13 +86,11 @@ The pipeline generates several output files:
 - `<result_prefix>.maf{rate}`: MAF-filtered SNP matrix (when -m option used)
 - `<result_prefix>.nr{rate}`: Non-redundant filtered SNP matrix (when -n option used)
 - `<result_prefix>.fa.dist.png`: Distribution of pairwise distances
-- `<result_prefix>.fa.pmrus.txt`: PMR values for unrelated sequences
-- `<result_prefix>.fa.pmr.30.2.txt`: PMR values of close strain pairs (for hot spots) 
-- `<result_prefix>.fa.pmr.all.2.txt`: PMR values of all strains (for cold spots) 
+- `<result_prefix>.integrated.tsv`: PMR values and status for each SNP 
 - `<result_prefix>.recx.txt`: Recombination index value
 - `<result_prefix>.fa.pmr.30.2.wt.l.pdf`: Plot of hotspots from close strains comparison
 - `<result_prefix>.fa.pmr.all.2.wt.l.pdf`: Plot of coldspots from all strains comparison
-- `<result_prefix>.all.coldsnp.txt` and `<result_prefix>.30.hotsnp.txt`: SNP positions in detected regions
+
 
 ## License
 
