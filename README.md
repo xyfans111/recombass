@@ -95,9 +95,3 @@ The pipeline generates several output files:
 ## License
 
 This project is licensed under the MIT License.
-
-## Citation
-
-If you use this tool in your research, please cite:
-
-> Recombass: A tool for recombination hotspot detection using wavelet-based denoising
