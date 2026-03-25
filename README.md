@@ -1,8 +1,8 @@
 # recombass
 
-[![PyPI](https://img.shields.io/pypi/v/recombpy)](https://pypi.org/project/recombpy/)
+[![PyPI](https://img.shields.io/pypi/v/recombass)](https://pypi.org/project/recombass/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue)]()
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue)]()
 
 A command-line tool for detecting **recombination hotspots and coldspots** from bacterial SNP matrices using wavelet-based denoising and PMR (Pairwise Mismatch Rate) analysis.
 
@@ -10,21 +10,19 @@ Designed for microbial population genomics, `recombass` integrates strain filter
 
 ## Requirements
 
-- Python 3.8-3.13
+- Python 3.9+
+- `snp-dists` available on `PATH`
 
 
 ##  Installation
 
-### From bioconda (recommended)
-- Use `conda` or `mamba` create a new environment with suitable python version (suggested)
-```bash
-mamba create -n recombass python=3.10
-mamba activate recombass
-```
-- install `recombass` in the environment or in your terminal
+### From PyPI
+
+If you install from PyPI, install the external runtime dependency separately:
 
 ```bash
-mamba install -c conda-forge -c bioconda recombass
+mamba install -c conda-forge -c bioconda snp-dists
+pip install recombass
 ```
 
 
@@ -36,11 +34,11 @@ The input SNP matrix should have SNP positions as rows and bacterial strains as 
 
 ```
     strain1  strain2  strain3  strain4
-100    A        T        A        G
-200    C        C        T        C
-300    G        A        G        A
-400    T        T        C        T
-500    G        G        A        G
+100 A        T        A        G
+200 C        C        T        C
+300 G        A        G        A
+400 T        T        C        T
+500 G        G        A        G
 ```
 
 In this format:
@@ -83,14 +81,30 @@ recombass -i <snps.tsv> -o <result_prefix> -m 0.9 -n 0.02 --cold-criterion -0.5 
 
 The pipeline generates several output files:
 
-- `<result_prefix>.maf{rate}`: MAF-filtered SNP matrix (when -m option used)
-- `<result_prefix>.nr{rate}`: Non-redundant filtered SNP matrix (when -n option used)
-- `<result_prefix>.fa.dist.png`: Distribution of pairwise distances
-- `<result_prefix>.integrated.tsv`: PMR values and status for each SNP 
+- `<result_prefix>.nr{rate}`: Non-redundant filtered SNP matrix when `-n` is used
+- `<result_prefix>.maf{rate}`: MAF-filtered SNP matrix when `-m` is used
+- `<result_prefix>.fa`: FASTA converted from the current SNP matrix
+- `<result_prefix>.fa.dist`: Pairwise SNP distance matrix from `snp-dists`
+- `<result_prefix>.fa.dist.tr`: Triangular distance table used downstream
+- `<result_prefix>.fa.dist.png`: Distance distribution plot
 - `<result_prefix>.recx.txt`: Recombination index value
-- `<result_prefix>.fa.pmr.30.2.wt.l.pdf`: Plot of hotspots from close strains comparison
-- `<result_prefix>.fa.pmr.all.2.wt.l.pdf`: Plot of coldspots from all strains comparison
+- `<result_prefix>.fa.pmr.30.2.wt.l.pdf`: Wavelet-denoised hotspot plot
+- `<result_prefix>.fa.pmr.all.2.wt.l.pdf`: Wavelet-denoised coldspot plot
+- `<result_prefix>.integrated.tsv`: Integrated per-site output with raw PMR, denoised PMR, and hot/cold labels
 
+When filtering is enabled, the effective output prefix changes as intermediate files are generated. For example:
+
+```bash
+recombass -i sample.tsv -o sample_out -m 0.95 -n 0.01
+```
+
+will produce final files such as:
+
+- `sample_out.nr01`
+- `sample_out.nr01.maf95`
+- `sample_out.nr01.maf95.integrated.tsv`
+- `sample_out.nr01.maf95.fa.pmr.30.2.wt.l.pdf`
+- `sample_out.nr01.maf95.fa.pmr.all.2.wt.l.pdf`
 
 ## License
 
