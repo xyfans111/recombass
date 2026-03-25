@@ -16,18 +16,6 @@ Designed for microbial population genomics, `recombass` integrates strain filter
 
 ##  Installation
 
-### From bioconda (recommended)
-- Use `conda` or `mamba` create a new environment with suitable python version (suggested)
-```bash
-mamba create -n recombass python=3.11
-mamba activate recombass
-```
-- install `recombass` in the environment or in your terminal
-
-```bash
-mamba install -c conda-forge -c bioconda recombass
-```
-
 ### From PyPI
 
 If you install from PyPI, install the external runtime dependency separately:
@@ -107,14 +95,6 @@ The pipeline generates several output files:
 ## License
 
 This project is licensed under the MIT License.
-
-## Bioconda recipe
-
-A Bioconda-ready recipe template is provided in `bioconda-recipe/meta.yaml`.
-Before submitting to `bioconda-recipes`, update:
-
-- `sha256` with the checksum of the PyPI source tarball
-- `recipe-maintainers` with your GitHub handle
 
 ## Citation
 
