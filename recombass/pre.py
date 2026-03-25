@@ -2,30 +2,45 @@
 import polars as pl
 import subprocess as sp
 
-def process_snp_dists(input_path: str,output_path: str, n_jobs: int = 20):
-    """处理SNP距离计算并生成三角矩阵结果
+
+def process_snp_dists(input_path: str, output_path: str, n_jobs: int = 20):
+    """Process SNP distances and generate triangular matrix result.
     
     Args:
-        input_path: 输入文件路径
-        n_jobs: 并行任务数 (默认4)
+        input_path: Input file path
+        output_path: Output file path
+        n_jobs: Number of parallel jobs (default 20)
     """
-    # 生成FASTA格式数据
-    df = pl.read_csv(input_path, separator="\t", row_index_name='pos')
-    result = df.select(pl.all().str.join())
-    fa=[f'>{result[series].name}\n{result[series].item()}\n' for series in result.columns]
+    # Generate FASTA format data
+    df = pl.read_csv(input_path, separator="\t")
+    sequence_cols = df.columns[1:]
+    result = df.select(pl.col(sequence_cols).str.join())
+    fa = [f'>{sample}\n{result[sample].item()}\n' for sample in sequence_cols]
     
     with open(f'{output_path}.fa', 'w') as f:
-        f.write(''.join(fa[2:]))  # 跳过前两列
+        f.write(''.join(fa))
     
-    # 执行snp-dists计算
-    sp.run(f"snp-dists -j {n_jobs} {output_path}.fa > {output_path}.fa.dist", shell=True)
+    # Execute snp-dists calculation
+    try:
+        with open(f"{output_path}.fa.dist", "w") as stdout:
+            sp.run(
+                ["snp-dists", "-j", str(n_jobs), f"{output_path}.fa"],
+                stdout=stdout,
+                stderr=sp.DEVNULL,
+                check=True,
+            )
+    except FileNotFoundError as exc:
+        raise RuntimeError(
+            "The 'snp-dists' executable was not found. Install it from Bioconda with "
+            "'mamba install -c conda-forge -c bioconda snp-dists'."
+        ) from exc
     
-    # 处理输出结果
-
+    # Process output result
     df = pl.read_csv(f"{output_path}.fa.dist", separator="\t", has_header=True)
     row_names = df.columns[1:]
     output_path = f"{output_path}.fa.dist.tr"
-    # 构建三角矩阵数据
+    
+    # Build triangular matrix data
     data = []
     for i in range(len(row_names)):
         for j in range(i + 1, len(row_names)):
@@ -35,6 +50,6 @@ def process_snp_dists(input_path: str,output_path: str, n_jobs: int = 20):
                 "distance": df[row_names[i]][j]
             })
     
-    # 写入输出文件
+    # Write output file
     pl.DataFrame(data).write_csv(output_path, separator="\t")
     return output_path

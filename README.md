@@ -1,8 +1,8 @@
 # recombass
 
-[![PyPI](https://img.shields.io/pypi/v/recombpy)](https://pypi.org/project/recombpy/)
+[![PyPI](https://img.shields.io/pypi/v/recombass)](https://pypi.org/project/recombass/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue)]()
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue)]()
 
 A command-line tool for detecting **recombination hotspots and coldspots** from bacterial SNP matrices using wavelet-based denoising and PMR (Pairwise Mismatch Rate) analysis.
 
@@ -10,21 +10,19 @@ Designed for microbial population genomics, `recombass` integrates strain filter
 
 ## Requirements
 
-- Python 3.8-3.13
+- Python 3.9+
+- `snp-dists` available on `PATH`
 
 
 ##  Installation
 
-### From bioconda (recommended)
-- Use `conda` or `mamba` create a new environment with suitable python version (suggested)
-```bash
-mamba create -n recombass python=3.10
-mamba activate recombass
-```
-- install `recombass` in the environment or in your terminal
+### From PyPI
+
+If you install from PyPI, install the external runtime dependency separately:
 
 ```bash
-mamba install -c conda-forge -c bioconda recombass
+mamba install -c conda-forge -c bioconda snp-dists
+pip install recombass
 ```
 
 
@@ -86,11 +84,13 @@ The pipeline generates several output files:
 - `<result_prefix>.maf{rate}`: MAF-filtered SNP matrix (when -m option used)
 - `<result_prefix>.nr{rate}`: Non-redundant filtered SNP matrix (when -n option used)
 - `<result_prefix>.fa.dist.png`: Distribution of pairwise distances
-- `<result_prefix>.integrated.tsv`: PMR values and status for each SNP 
+- `<result_prefix>.fa.pmrus.txt`: PMR values for unique sequences
+- `<result_prefix>.fa.pmr.30.2.txt`: PMR values for close strains
+- `<result_prefix>.fa.pmr.all.2.txt`: PMR values for all strains
 - `<result_prefix>.recx.txt`: Recombination index value
 - `<result_prefix>.fa.pmr.30.2.wt.l.pdf`: Plot of hotspots from close strains comparison
 - `<result_prefix>.fa.pmr.all.2.wt.l.pdf`: Plot of coldspots from all strains comparison
-
+- `<result_prefix>.all.coldsnp.txt` and `<result_prefix>.30.hotsnp.txt`: SNP positions in detected regions
 
 ## License
 
@@ -100,4 +100,4 @@ This project is licensed under the MIT License.
 
 If you use this tool in your research, please cite:
 
-> 
+> Recombass: A tool for recombination hotspot detection using wavelet-based denoising
