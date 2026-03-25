@@ -14,11 +14,11 @@ Designed for microbial population genomics, `recombass` integrates strain filter
 - `snp-dists` available on `PATH`
 
 
-##  Installation
+## Installation
 
 ### From PyPI
 
-If you install from PyPI, install the external runtime dependency separately:
+Install the external runtime dependency first, then install `recombass` from PyPI:
 
 ```bash
 mamba install -c conda-forge -c bioconda snp-dists
@@ -30,21 +30,22 @@ pip install recombass
 
 ### Input Format
 
-The input SNP matrix should have SNP positions as rows and bacterial strains as columns. Here is an example:
+The input SNP matrix must be a tab-delimited table with:
 
-```
-    strain1  strain2  strain3  strain4
-100 A        T        A        G
-200 C        C        T        C
-300 G        A        G        A
-400 T        T        C        T
-500 G        G        A        G
-```
+- SNP positions in the first column
+- strain names in the header row
+- nucleotide calls in each cell
 
-In this format:
-- The first column contains SNP positions
-- The first row contains strain names
-- Each cell contains the nucleotide at that position for that strain
+Example:
+
+```tsv
+	strain1	strain2	strain3	strain4
+100	A	T	A	G
+200	C	C	T	C
+300	G	A	G	A
+400	T	T	C	T
+500	G	G	A	G
+```
 
 ### Command Line Interface
 
@@ -54,7 +55,7 @@ The main command structure:
 recombass [OPTIONS] -m  -i <input_path> -o <output_prefix>
 ```
 
-#### Available Options:
+#### Available Options
 
 - `-m`, `--maf` FLOAT: Max major allele frequency (e.g., 0.95) (highly suggested)
 - `-n`, `--nonredundant` FLOAT: Non-redundant strain clustering threshold (e.g., 0.01)
@@ -64,7 +65,7 @@ recombass [OPTIONS] -m  -i <input_path> -o <output_prefix>
 - `-i`, `--input` PATH: Input file path (required)
 - `-o`, `--output` PATH: Output prefix (required)
 
-#### Example Usage:
+#### Example Usage
 
 ```bash
 # Basic usage
@@ -79,7 +80,7 @@ recombass -i <snps.tsv> -o <result_prefix> -m 0.9 -n 0.02 --cold-criterion -0.5 
 
 ## Output Files
 
-The pipeline generates several output files:
+The pipeline can generate the following files:
 
 - `<result_prefix>.nr{rate}`: Non-redundant filtered SNP matrix when `-n` is used
 - `<result_prefix>.maf{rate}`: MAF-filtered SNP matrix when `-m` is used
@@ -88,8 +89,8 @@ The pipeline generates several output files:
 - `<result_prefix>.fa.dist.tr`: Triangular distance table used downstream
 - `<result_prefix>.fa.dist.png`: Distance distribution plot
 - `<result_prefix>.recx.txt`: Recombination index value
-- `<result_prefix>.fa.pmr.30.2.wt.l.pdf`: Wavelet-denoised hotspot plot
-- `<result_prefix>.fa.pmr.all.2.wt.l.pdf`: Wavelet-denoised coldspot plot
+- `<result_prefix>.fa.pmr.30.2.wt.l.pdf`: Hotspot plot from the denoised close-strain PMR signal
+- `<result_prefix>.fa.pmr.all.2.wt.l.pdf`: Coldspot plot from the denoised all-strain PMR signal
 - `<result_prefix>.integrated.tsv`: Integrated per-site output with raw PMR, denoised PMR, and hot/cold labels
 
 When filtering is enabled, the effective output prefix changes as intermediate files are generated. For example:
@@ -109,4 +110,3 @@ will produce final files such as:
 ## License
 
 This project is licensed under the MIT License.
-
