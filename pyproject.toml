@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "recombass"
-version = "0.1.6"
+version = "0.1.7"
 description = "Detect recombination hot/cold spots from SNP matrices using wavelet denoising"
 readme = "README.md"
 authors = [{name = "Hao Huang", email = "huanghao@simm.ac.cn"}]

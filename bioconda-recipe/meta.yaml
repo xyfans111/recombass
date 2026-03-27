@@ -1,5 +1,5 @@
 {% set name = "recombass" %}
-{% set version = "0.1.6" %}
+{% set version = "0.1.7" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: REPLACE_WITH_PYPI_SDIST_SHA256
+  sha256: REPLACE_WITH_PYPI_SDIST_SHA256_FOR_0_1_7
 
 build:
   noarch: python
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   entry_points:
     - recombass = recombass.cli:main
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
@@ -36,6 +38,8 @@ requirements:
     - snp-dists >=0.8.2
 
 test:
+  source_files:
+    - tests/data/toy_snps.tsv
   imports:
     - recombass
   commands:
@@ -53,9 +57,9 @@ about:
   home: https://pypi.org/project/recombass/
   summary: Detect recombination hot/cold spots from SNP matrices using wavelet denoising
   license: MIT
-  license_file: LICENSE.txt
+  license_file: LICENSE
   doc_url: https://pypi.org/project/recombass/
 
 extra:
   recipe-maintainers:
-    - REPLACE_WITH_YOUR_GITHUB_ID
+    - xyfans111

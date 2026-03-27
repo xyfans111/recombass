@@ -35,7 +35,8 @@ def get_hrange(df, c=0.6):
 
 def wavelet_transform(df, value_col, a, hc=0.6, lc=-0.4):
     """Apply wavelet denoising to one PMR signal column from pmr_data."""
-    rec = df[value_col].astype(float).to_numpy()
+    # PyWavelets may receive a read-only view from pandas in some environments.
+    rec = np.array(df[value_col].astype(float).to_numpy(), dtype=float, copy=True)
     signal_len = len(rec)
 
     if a == '30':
@@ -48,13 +49,27 @@ def wavelet_transform(df, value_col, a, hc=0.6, lc=-0.4):
         threshold = 0.8
 
     max_level = pywt.dwt_max_level(signal_len, pywt.Wavelet(wavefunc).dec_len)
-    level = max(1, min(level, max_level))
+    if signal_len == 0 or max_level < 1:
+        y_denoised = rec.copy()
+        y_re = pd.DataFrame({
+            'r': y_denoised,
+            'loc': df['pos'].to_numpy(),
+        })
+        y_re.index = range(signal_len)
+        if a == '30':
+            selected_positions = y_re[y_re['r'] > hc]['loc'].tolist()
+        else:
+            selected_positions = y_re[y_re['r'] < lc]['loc'].tolist()
+        return rec, y_denoised, y_re, selected_positions
+
+    level = min(level, max_level)
 
     coeffs = pywt.wavedec(rec, wavefunc, mode='periodic', level=level)
     for i in range(1, len(coeffs)):
         coeff = coeffs[i]
-        thr = threshold * np.max(np.abs(coeff)) if len(coeff) else 0
-        coeffs[i] = pywt.threshold(coeff, thr)
+        max_coeff = np.max(np.abs(coeff)) if len(coeff) else 0
+        thr = threshold * max_coeff
+        coeffs[i] = coeff if thr == 0 else pywt.threshold(coeff, thr)
 
     y_denoised = pywt.waverec(coeffs, wavefunc, mode='periodic')[:signal_len]
 

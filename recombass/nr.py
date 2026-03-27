@@ -4,11 +4,11 @@ from sklearn.cluster import AgglomerativeClustering
 import polars as pl
 import subprocess as sp
 
+from .inputprep import normalize_snp_matrix
+
 def process_noredundant(input_path: str, output_path: str, percentage:float=0.01, n_jobs: int = 20):
     # Generate FASTA format data
-    df = pl.read_csv(input_path, separator="\t")
-    position_col = df.columns[0]
-    sequence_cols = df.columns[1:]
+    df, position_col, sequence_cols = normalize_snp_matrix(input_path)
     result = df.select(pl.col(sequence_cols).str.join())
 
     fa=[f'>{sample}\n{result[sample].item()}\n' for sample in sequence_cols]
@@ -29,6 +29,14 @@ def process_noredundant(input_path: str, output_path: str, percentage:float=0.01
         raise RuntimeError(
             "The 'snp-dists' executable was not found. Install it from Bioconda with "
             "'mamba install -c conda-forge -c bioconda snp-dists'."
+        ) from exc
+    except sp.CalledProcessError as exc:
+        raise RuntimeError(
+            "snp-dists failed while processing "
+            f"'{input_path}' during non-redundant clustering "
+            f"(FASTA: '{output_path}.fa', exit code {exc.returncode}). "
+            "Check that the input is a valid SNP matrix with at least two sequence columns "
+            "and that all sequence values are single-base calls or gaps."
         ) from exc
     distance=pd.read_table(f'{output_path}.fa.dist',index_col=0,header=0)
     clustering=AgglomerativeClustering(n_clusters=None,metric='precomputed',linkage='average',distance_threshold=percentage*np.median(distance.values))

@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import numpy as np
-import polars as pl
+
+from .inputprep import normalize_snp_matrix
 
 def filter_maf(input_path: str, maf_rate: float, output_path: str) -> str:
     """Filter sequence data based on Minor Allele Frequency (MAF)"""
-    df = pl.read_csv(input_path, separator="\t")
+    df, _, _ = normalize_snp_matrix(input_path)
     
     array = df[:,1:].to_numpy().T
     

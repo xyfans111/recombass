@@ -2,6 +2,8 @@
 import polars as pl
 import subprocess as sp
 
+from .inputprep import normalize_snp_matrix
+
 
 def process_snp_dists(input_path: str, output_path: str, n_jobs: int = 20):
     """Process SNP distances and generate triangular matrix result.
@@ -12,8 +14,7 @@ def process_snp_dists(input_path: str, output_path: str, n_jobs: int = 20):
         n_jobs: Number of parallel jobs (default 20)
     """
     # Generate FASTA format data
-    df = pl.read_csv(input_path, separator="\t")
-    sequence_cols = df.columns[1:]
+    df, _, sequence_cols = normalize_snp_matrix(input_path)
     result = df.select(pl.col(sequence_cols).str.join())
     fa = [f'>{sample}\n{result[sample].item()}\n' for sample in sequence_cols]
     
@@ -33,6 +34,13 @@ def process_snp_dists(input_path: str, output_path: str, n_jobs: int = 20):
         raise RuntimeError(
             "The 'snp-dists' executable was not found. Install it from Bioconda with "
             "'mamba install -c conda-forge -c bioconda snp-dists'."
+        ) from exc
+    except sp.CalledProcessError as exc:
+        raise RuntimeError(
+            "snp-dists failed while processing "
+            f"'{input_path}' (FASTA: '{output_path}.fa', exit code {exc.returncode}). "
+            "Check that the input is a valid SNP matrix with at least two sequence columns "
+            "and that all sequence values are single-base calls or gaps."
         ) from exc
     
     # Process output result
