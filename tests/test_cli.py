@@ -1,5 +1,6 @@
 from click.testing import CliRunner
 
+from recombass import __version__
 from recombass.cli import main
 
 
@@ -12,4 +13,4 @@ def test_help():
 def test_version():
     result = CliRunner().invoke(main, ["--version"])
     assert result.exit_code == 0
-    assert "0.1.6" in result.output
+    assert __version__ in result.output
