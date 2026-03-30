@@ -16,7 +16,15 @@ Designed for microbial population genomics, `recombass` integrates strain filter
 
 ## Installation
 
-### From PyPI
+### Recommended: Bioconda
+
+Install `recombass` from Bioconda (this also installs `snp-dists` automatically):
+
+```bash
+mamba install -c conda-forge -c bioconda recombass
+```
+
+### Alternative: PyPI
 
 Install the external runtime dependency first, then install `recombass` from PyPI:
 
